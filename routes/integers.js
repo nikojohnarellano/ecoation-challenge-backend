@@ -9,8 +9,8 @@ var Integer  = require("../models/integer");
 
 router.get('/current', passport.authenticate('jwt', { session: false }), function (req, res, next) {
     console.log('Getting current integer.')
+    
     Integer.findOne()
-           .sort({created_at: 1})
            .exec(function(err, int) {
                 console.log(int)
                  if(err) {
@@ -18,14 +18,13 @@ router.get('/current', passport.authenticate('jwt', { session: false }), functio
                     console.log(err)
                     return next(err)
                 }
-               res.json(int)
+                res.json(int)
             });
 })
 
 router.get('/next', passport.authenticate('jwt', { session: false }), function (req, res, next) {
     console.log('Getting next integer.')
     Integer.findOneAndUpdate({}, { $inc : {currentInteger : 1} }, { new : true })
-           .sort({created_at: 1})
            .exec(function(err, int) {
                 console.log(int)
                  if(err) {
@@ -39,11 +38,10 @@ router.get('/next', passport.authenticate('jwt', { session: false }), function (
 
 router.post('/update', passport.authenticate('jwt', { session: false }), function (req, res, next) {
     console.log('Updating the integer.')
-    if (!req.body.newInt || typeof req.body.newInt != "number") {
+    if (!req.body.newInt && typeof req.body.newInt != "number") {
         res.status(422).json({"success" : false, message : "An integer should be provided"});
     } else {
         Integer.findOneAndUpdate({}, { currentInteger : req.body.newInt }, { new : true })
-                .sort({created_at: 1})
                 .exec(function(err, int) {
                     console.log(int)
                     if(err) {
