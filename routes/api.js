@@ -11,30 +11,29 @@ var User     = require("../models/user");
 router.use('/int', integer);
 
 router.post('/signup', function(req, res) {
-    if(!req.body.email || !req.body.password) {
-        res.status(422).json({ success : false , msg: 'Email or password not found.' })
-    } else {
-        var newUser = new User({
-            email : req.body.email,
-            password : req.body.password
-        })
+    // Assuming validation is already done on the client side
+    var newUser = new User({
+        email : req.body.email,
+        password : req.body.password
+    })
 
-        newUser.save(function(err) {
-            if(err) {
-                console.log(err)
-                return res.json({success : false, msg : 'Email address already exists'});
-            }
-            res.json({success : true, msg : 'Successfully created new user.'});
-        });
-    }
+    newUser.save(function(err) {
+        if(err) {
+            console.log(err)
+            return res.json({success : false, msg : 'Email address already exists'});
+        }
+        res.json({success : true, msg : 'Successfully created new user.'});
+    });
+    
 });
 
 router.post('/signin', function(req,res) {
+    
     User.findOne({
         email : req.body.email
     }, function (err, user) {
         if(err) throw err;
-
+        console.log(user)
         if(!user) {
             res.status(401).send({success : false, msg: 'Authentication failed. User not found.'});
         } else {
