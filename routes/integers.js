@@ -41,19 +41,21 @@ router.post('/update', passport.authenticate('jwt', { session: false }), functio
     if (!req.body.newInt && typeof req.body.newInt != "number") {
         res.status(422).json({"success" : false, message : "An integer should be provided"});
     } else {
-        Integer.findOneAndUpdate({}, { currentInteger : req.body.newInt }, { new : true })
-                .exec(function(err, int) {
+        if(req.body.newInt < 0) {
+            res.status(422).json({"success" : false, message : "Integer should only be a positive integer."});
+        } else {
+            Integer.findOneAndUpdate({}, { currentInteger : req.body.newInt }, { new : true })
+            .exec(function(err, int) {
+                console.log(int)
+                if(err) {
+                    console.log('Error occurred updating the integer')
                     console.log(int)
-                    if(err) {
-                        console.log('Error occurred updating the integer')
-                        console.log(int)
-                        return next(err)
-                    }
-                    res.json(int)
-                });
+                    return next(err)
+                }
+                res.json(int)
+            });
+        }
     }
-
-    
 })
 
 module.exports = router;
